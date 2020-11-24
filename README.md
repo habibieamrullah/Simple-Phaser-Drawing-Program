@@ -9,3 +9,5 @@ This simple drawing can be useful to you if you want to make an online drawing p
  
 Here is the link for Phaser: http://phaser.io/,
 and here is the link for jscolor: https://jscolor.com/ (a handy color picker tool I used).
+
+Watch the demo video here: https://www.youtube.com/watch?v=AP8FonwXD_0
