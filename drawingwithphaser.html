@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Phaser Drawing Example</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, shrink-to-fit=no">
+		<script src="phaser.js"></script>
+		<script src="jquery-3.5.1.min.js"></script>
+		<script src="jscolor.js"></script>
+	</head>
+	<body align="center">
+		
+		<h1>Drawing on Canvas using Phaser</h1>
+		<div>
+			<div id="phaser-example" style="border: 2px solid black; display: inline-block; width: 100%; max-width: 720px;"></div>
+		</div>
+		<div>
+			Brush size: <input onchange="changeBrushSize();" id="brushsize" type="range" min=1 max=15 value=1> 
+			Brush color: <input onchange="changeBrushColor();" id="brushcolor" value="#000000" data-jscolor>
+			<button onclick="clearCanvas()">Clear My Canvas</button>
+		</div>
+		<p>For more projects, follow me: <a href="https://www.youtube.com/ThirteeNov/">https://www.youtube.com/ThirteeNov/</a></p>
+		
+			
+		<script>
+		
+			var size = 1;
+			var graphics;
+			var curves = [];
+			var curve = null;
+			var brushcolor = "#000000";
+			var backgroundcolor = "#ffffff";
+			
+			var config = {
+				type: Phaser.AUTO,
+				width: $("#phaser-example").width(),
+				height: 400,
+				backgroundColor: backgroundcolor,
+				parent: 'phaser-example',
+				scene: {
+					preload: preload,
+					create: create
+				}
+			};
+
+			var game = new Phaser.Game(config);
+
+			function preload ()
+			{
+				
+			}
+
+			function create ()
+			{
+
+				var distance = size;
+				var lastPosition = new Phaser.Math.Vector2();
+				
+
+
+				var current = null;
+				var previous = null;
+
+				graphics = this.add.graphics();
+
+				this.input.on('pointerdown', function (pointer) {
+
+					lastPosition.x = pointer.x;
+					lastPosition.y = pointer.y;
+					curve = new Phaser.Curves.Spline([ pointer.x, pointer.y ]);
+					curves.push(curve);
+
+				}, this);
+
+				this.input.on('pointermove', function (pointer) {
+
+					if (pointer.isDown)
+					{
+						var x = pointer.x;
+						var y = pointer.y;
+
+						if (Phaser.Math.Distance.Between(x, y, lastPosition.x, lastPosition.y) > distance)
+						{
+							
+							lastPosition.x = x;
+							lastPosition.y = y;
+							previous = current;
+							curve.addPoint(x, y);
+							graphics.lineStyle(size * 1.5, brushcolor.replace("#", "0x"));
+							curves.forEach(function(c) {
+								c.draw(graphics, 512);
+							});
+						}
+					}
+
+				}, this);
+				
+				this.input.on('pointerup', function (pointer){
+					graphics.save();
+					curves = [];
+					curve = null;
+				}, this);
+
+			}
+		</script>
+		
+		
+		<script>
+			function changeBrushSize(){
+				var brushsize = $("#brushsize").val();
+				console.log(brushsize);
+				size = brushsize;
+			}
+			
+			function changeBrushColor(){
+				brushcolor = $("#brushcolor").val();
+				console.log("Brush color changed to " + brushcolor);
+			}
+			
+			function clearCanvas(){
+				graphics.clear();
+			}
+		</script>
+		
+	</body>
+</html>
